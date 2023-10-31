@@ -1,7 +1,6 @@
 
 # Import modules and code/classes/objects from other files
 import math
-import random
 
 import pygame.font
 
@@ -14,16 +13,103 @@ def main():
 
     # ----------------- Initializing Pygame Variables -----------------
     pygame.init()
-
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))  # The initial Pygame Screen
     clock = pygame.time.Clock()  # Clock for adjusting the frames per second
 
-    time = 0  # Used for keeping track of seconds (60 ticks per second)
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))  # The initial Pygame Screen
 
     screen.fill(SCREEN_COLOR)
     pygame.display.set_caption("Carbon Clicker")
 
+    application_icon = pygame.image.load("images/carbon_clicker_logo.png")
+    pygame.display.set_icon(application_icon)
+
+    logo = ImageRectObject((0, 0, 0, 0), (WIDTH // 2 - 200, HEIGHT // 2 - 200, 400, 400), 0, 0,
+                            image_file="images/carbon_clicker_logo.png")
+    logo.image = pygame.transform.scale(logo.image, (400, 400))
+
+    basic_objects = [
+        RectTextObject(SCREEN_COLOR, (WIDTH // 2 - 300, 40, 600, 100), 0, 50,
+                       text="", text_color=GOLD_COLOR, text_size=60),
+        RectTextObject(SCREEN_COLOR, (WIDTH // 2 - 100, 600, 200, 60), 0, 50,
+                       text="", text_color=GOLD_COLOR, text_size=40),
+        RectTextObject(GOLD_COLOR, (WIDTH // 2 - 300, 40, 600, 100), 4, 50,
+                       text="Carbon Clicker!", text_color=GOLD_COLOR, text_size=60),
+        logo,
+    ]
+
+    start_button = RectTextButton(GOLD_COLOR, (WIDTH // 2 - 100, 600, 200, 60), 4, 50, action="start_game",
+                                  text="Start", text_color=GOLD_COLOR, text_size=40)
+
+    stars = []
+
+    for star_i in range(400):
+        stars.append(Star((0, 0, WIDTH, HEIGHT)))
+
+    starting = False
+    transparency = 0
+
+    # main_game(screen)
+
+    # ----------------- The Main GUI Loop -----------------
+    running = True
+    while running:
+
+        # ----------------- Looping through Pygame Events -----------------
+        for event in pygame.event.get():
+
+            # Quit Pygame
+            if event.type == pygame.QUIT:
+                running = False
+                break
+
+            # ----------------- Mouse Released -----------------
+            if event.type == pygame.MOUSEBUTTONUP and not starting:
+                mouse_pos = pygame.mouse.get_pos()
+                if start_button.is_selecting(mouse_pos):
+                    starting = True
+
+        # Re-Draw
+        screen.fill(SCREEN_COLOR)
+
+        # Draw stars
+        mouse_pos = pygame.mouse.get_pos()
+        displacement = ((mouse_pos[0] - WIDTH // 2) / 2400.0, (mouse_pos[1] - HEIGHT // 2) / 2400.0)
+
+        for star in stars:
+            star.update_position(displacement)
+            star.draw(screen, False)
+
+        is_selected = start_button.is_selecting(mouse_pos)
+
+        # Draw objects
+        draw_basic_objects(screen, basic_objects)
+        start_button.draw(screen, is_selected)
+
+        if starting:
+            transparency = transparency + 2 + transparency * 0.1
+            new_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+            new_surface.set_alpha(transparency)
+            new_surface.fill((0, 0, 0))
+            screen.blit(new_surface, (0, 0))
+
+            if transparency >= 255:
+                running = False
+
+        # Set the FPS and update
+        clock.tick(60)
+        pygame.display.update()
+
+    main_game(screen)
+
+
+def main_game(screen):
+
     # ----------------- Initializing Objects -----------------
+    starting = True
+    transparency = 255
+
+    time = 0  # Used for keeping track of seconds (60 ticks per second)
+    clock = pygame.time.Clock()  # Clock for adjusting the frames per second
 
     # The Main Panels
     title_panel = RectTextObject((0, 0, 0, 0), LAYER_TITLE_RECT, 0, 0,
@@ -362,6 +448,16 @@ def main():
         draw_animated_text(screen, animation_text_list)
         draw_item_popup(screen, item_popup)
         draw_upgrade_popup(screen, upgrade_popup)
+
+        if starting:
+            transparency = max(transparency - 1 - (255 - transparency) * 0.1, 0)
+            new_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+            new_surface.set_alpha(transparency)
+            new_surface.fill((0, 0, 0))
+            screen.blit(new_surface, (0, 0))
+
+            if transparency == 0:
+                starting = False
 
         # Set the FPS and update
         clock.tick(60)
