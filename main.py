@@ -346,7 +346,7 @@ def main():
 
         # Draw stars
         earth_center = earth_clicker.get_center()
-        displacement = ((mouse_pos[0] - earth_center[0]) / 1000.0, (mouse_pos[1] - earth_center[1]) / 1000.0)
+        displacement = ((mouse_pos[0] - earth_center[0]) / 2400.0, (mouse_pos[1] - earth_center[1]) / 2400.0)
 
         for star in stars:
             star.update_position(displacement)

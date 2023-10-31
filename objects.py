@@ -521,7 +521,7 @@ class Earth(pygame.sprite.Sprite):
 class Star(CircleObject):
     # 3 panels
     def __init__(self, spawn_rect):
-        self.inherent_speed = random.randint(-10, 10) / 100.0
+        self.inherent_speed = random.randint(-5, 5) / 100.0
         self.spawn_rect = spawn_rect
         self.radius = 1
         self.x = random.randint(spawn_rect[0], spawn_rect[0] + spawn_rect[2] - self.radius)
@@ -542,19 +542,19 @@ class Star(CircleObject):
 
         # Out of bounds
         if self.x < self.spawn_rect[0]:
-            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.inherent_speed = random.randint(-5, 5) / 100.0
             self.x = self.spawn_rect[0] + self.spawn_rect[2]
             self.y = random.randint(self.spawn_rect[1], self.spawn_rect[1] + self.spawn_rect[3] - self.radius)
         elif self.x > self.spawn_rect[0] + self.spawn_rect[2]:
-            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.inherent_speed = random.randint(-5, 5) / 100.0
             self.x = self.spawn_rect[0]
             self.y = random.randint(self.spawn_rect[1], self.spawn_rect[1] + self.spawn_rect[3] - self.radius)
         elif self.y < self.spawn_rect[1]:
-            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.inherent_speed = random.randint(-5, 5) / 100.0
             self.x = random.randint(self.spawn_rect[0], self.spawn_rect[0] + self.spawn_rect[2] - self.radius)
             self.y = self.spawn_rect[1] + self.spawn_rect[3]
         elif self.y > self.spawn_rect[1] + self.spawn_rect[3]:
-            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.inherent_speed = random.randint(-5, 5) / 100.0
             self.x = random.randint(self.spawn_rect[0], self.spawn_rect[0] + self.spawn_rect[2] - self.radius)
             self.y = self.spawn_rect[1]
 
