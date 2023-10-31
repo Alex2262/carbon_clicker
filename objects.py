@@ -236,8 +236,8 @@ class Item(RectTextButton):
         self.hidden = True
         self.enough = False
         self.item_type = item_type
-        self.image = pygame.image.load("images/building_frame.png").convert_alpha()
-        self.item_icon = pygame.image.load("images/item_icons/item_icon{0}.png".format(item_type))
+        self.image = pygame.image.load(base_path + "images/building_frame.png").convert_alpha()
+        self.item_icon = pygame.image.load(base_path + "images/item_icons/item_icon{0}.png".format(item_type))
 
         self.price = ITEM_PRICES[item_type]
         self.text = ITEM_NAMES[item_type]
@@ -359,7 +359,7 @@ class ItemPopup(ImageRectTextObject):
 # Upgrades for increasing machine rates
 class Upgrade(ImageButton):
     def __init__(self, color, rect, border, radius, action, item, text, text_color, text_size):
-        self.image_file = "images/upgrade_frame.png"  # TODO: Get image file (frame)
+        self.image_file = base_path+"images/upgrade_frame.png"
 
         super().__init__(color, rect, border, radius, action, self.image_file, text, text_color, text_size)
 
@@ -374,7 +374,7 @@ class Upgrade(ImageButton):
         self.enough = False
 
         self.icon = pygame.image.load(
-            "images/upgrade_icons/upgrade_icon{0}_{1}.png".format(self.item_type, self.tier)).convert_alpha()
+            base_path+"images/upgrade_icons/upgrade_icon{0}_{1}.png".format(self.item_type, self.tier)).convert_alpha()
 
         self.upgrade_order = 0
         for i in range(len(UPGRADE_ORDER)):
@@ -446,7 +446,7 @@ class Earth(pygame.sprite.Sprite):
 
         self.stage = 0
 
-        self.unedited_sprite = pygame.image.load("images/earth_clickers/earth0.png")
+        self.unedited_sprite = pygame.image.load(base_path + "images/earth_clickers/earth0.png")
         self.sprite = pygame.transform.smoothscale(
             self.unedited_sprite,
             (self.width, self.height))
@@ -456,7 +456,8 @@ class Earth(pygame.sprite.Sprite):
     # Draws the earth, depending on how clean it is
     def redraw(self):
 
-        self.unedited_sprite = pygame.image.load("images/earth_clickers/earth{}.png".format(min(4, self.stage)))
+        self.unedited_sprite = pygame.image.load(
+            base_path + "images/earth_clickers/earth{}.png".format(min(4, self.stage)))
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.image.convert_alpha()
 

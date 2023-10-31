@@ -1,4 +1,15 @@
 
+import sys
+import os
+
+base_path = ""
+
+# determine if application is a script file or frozen exe
+if getattr(sys, 'frozen', False):
+    base_path = os.path.dirname(sys.executable) + "/"
+elif __file__:
+    base_path = os.path.dirname(__file__) + "/"
+
 # Screen Information
 WIDTH = 1100
 HEIGHT = 700

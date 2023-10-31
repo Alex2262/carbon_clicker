@@ -20,11 +20,11 @@ def main():
     screen.fill(SCREEN_COLOR)
     pygame.display.set_caption("Carbon Clicker")
 
-    application_icon = pygame.image.load("images/carbon_clicker_logo.png")
+    application_icon = pygame.image.load(base_path + "images/carbon_clicker_logo.png")
     pygame.display.set_icon(application_icon)
 
     logo = ImageRectObject((0, 0, 0, 0), (WIDTH // 2 - 200, HEIGHT // 2 - 200, 400, 400), 0, 0,
-                            image_file="images/carbon_clicker_logo.png")
+                            image_file=base_path + "images/carbon_clicker_logo.png")
     logo.image = pygame.transform.scale(logo.image, (400, 400))
 
     basic_objects = [
@@ -122,7 +122,7 @@ def main_game(screen):
                                        text="PPS: 000000", text_color=GOLD_COLOR, text_size=24)
     money_panel = RectTextObject((0, 0, 0, 0), LAYER_MONEY_RECT, 0, 0,
                                text="$: 000000", text_color=GOLD_COLOR, text_size=24)
-    item_panel = ImageRectTextObject((0, 0, 0), LAYER_ITEMS_RECT, 0, 0, image_file="images/item_panel.png",
+    item_panel = ImageRectTextObject((0, 0, 0), LAYER_ITEMS_RECT, 0, 0, image_file=base_path + "images/item_panel.png",
                                 text="Items!", text_color=GOLD_COLOR, text_size=40)
 
     achievement_title_panel = RectTextObject((0, 0, 0, 0), LAYER_ACHIEVEMENT_TITLE_RECT, 0, 0, text="Achievements:",
@@ -148,8 +148,10 @@ def main_game(screen):
 
     # Create the first layer of basic objects
     basic_objects_layer_1 = [
-        ImageRectObject((100, 100, 100), LAYER_LEFT_RECT, 0, 0, image_file="images/left_background.png"),
-        ImageRectObject((200, 200, 200), LAYER_MIDDLE_RECT, 0, 0, image_file="images/middle_background_border.png"),
+        ImageRectObject((100, 100, 100), LAYER_LEFT_RECT, 0, 0,
+                        image_file=base_path + "images/left_background.png"),
+        ImageRectObject((200, 200, 200), LAYER_MIDDLE_RECT, 0, 0,
+                        image_file=base_path + "images/middle_background_border.png"),
         RectObject((0, 0, 0), LAYER_RIGHT_RECT, 0, 0),
         title_panel,
         pollution_cleared_panel,
@@ -175,7 +177,7 @@ def main_game(screen):
     holding_scroll_bar = False
     starting_mouse_y = 0
     scroll_bar = ScrollBar((0, 0, 0, 0), (LAYER_RIGHT_RECT[0] + 390, LAYER_RIGHT_RECT[1] + LAYER_ITEMS_RECT[3], 10, 50),
-                           0, 0, image_file="images/scroll_bar.png")
+                           0, 0, image_file=base_path + "images/scroll_bar.png")
 
     sell_button = ImageButton((0, 0, 0, 0), SELL_BUTTON_RECT, 0, 0, "SELL", "images/sell_button.png",
                               text="SELL!", text_color=GOLD_COLOR, text_size=30)
@@ -415,12 +417,12 @@ def main_game(screen):
         if type(selected_object) == Item and not selected_object.hidden:
             item_popup = ItemPopup((0, 0, 0, 0),
                                    (selected_object.x - 390, selected_object.y, 390, 100), 0, 0,
-                                   "images/building_frame.png",
+                                   base_path + "images/building_frame.png",
                                    popup_message=ITEM_INFO[selected_object.item_type])
         elif type(selected_object) == Upgrade and not selected_object.hidden:
             upgrade_popup = UpgradePopup((0, 0, 0, 0),
                                          (selected_object.x + selected_object.width, selected_object.y, 390, 100), 0, 0,
-                                         "images/building_frame.png",
+                                         base_path + "images/building_frame.png",
                                          UPGRADE_COSTS[selected_object.item_type][selected_object.tier],
                                          popup_message=UPGRADE_INFO[selected_object.item_type][selected_object.tier])
         else:
