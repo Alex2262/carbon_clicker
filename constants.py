@@ -65,31 +65,31 @@ ITEM_RATES = [0.5, 6, 70, 800, 10000, 100000, 900000, 6300000, 56000000]
 
 # The descriptions for the tower popups
 ITEM_INFO = [
-    "The Volunteer by themself may be small, but they are the most important in contributing to the environment."
-    " Just like YOU, everyone can make a difference!",
+    "The Volunteer: by themselves they may be small, but they are the most important in contributing to the"
+    " environment. Just like YOU, everyone can make a difference!",
 
-    "Help pick up some garbage and make the environment cleaner! It will go a long way.",
+    "Claw: Help pick up some garbage and make the environment cleaner! It will go a long way.",
 
-    "Trees are an essential helper against climate change."
+    "Trees: essential helpers against climate change."
     " They reduce carbon dioxide in the atmosphere while replenishing oxygen."
     "They are also good at removing air pollutants.",
 
-    "The Seabin filters water and captures oil and trash to help clean the oceans."
+    "The Seabin: filters water and captures oil and trash to help clean the oceans."
     " Get some of these to save the oceans and the environment!",
 
-    "A River Trash Fence is placed at a dry river bed."
+    "River Trash Fences: placed at a dry river bed."
     " When Flash Floods arrive, the fence will intercept any trash and retain it in place!",
 
-    "Recycling Facilities help out the environment so much by recycling trash and materials such as plastic"
+    "Recycling Facilities: help out the environment so much by recycling trash and materials such as plastic"
     " into new and useful material. Instead of throwing your trash in the ocean, help recycle it!",
 
-    "The Smog Vacuum uses futuristic technology to clean air and remove pollution and smog."
+    "The Smog Vacuum: uses futuristic technology to clean air and remove pollution and smog."
     " Help everyone breathe cleaner!",
 
-    "This Trash Boat will lie in wait for any trash floating down a river, and capture and prevent it from"
+    "This Trash Boat: lies in wait for any trash floating down a river, and captures and prevents it from"
     " flowing into oceans!",
 
-    "The Carbon Capturer will capture any unwanted greenhouse gasses from industrial processes,"
+    "The Carbon Capturer: captures any unwanted greenhouse gasses from industrial processes,"
     " preventing it from entering the atmosphere and exacerbating climate change."
 ]
 

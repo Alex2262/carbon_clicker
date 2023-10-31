@@ -125,7 +125,7 @@ def main():
                                 "", (0, 0, 0), 0))
 
     # ----------------- Variables and internal Data -----------------
-    money = 0
+    money = 10000000000000000
 
     pollution_cleared = 0
     total_pollution_cleared = 0

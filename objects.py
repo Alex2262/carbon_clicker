@@ -319,7 +319,7 @@ class ItemPopup(ImageRectTextObject):
         popup_height = 100
 
         # Calculate each line
-        max_char_per_line = 2 * (popup_width - 30) // self.text_size
+        max_char_per_line = int(1.95 * (popup_width - 30)) // self.text_size
         word_list = self.text.split()
         lines = []
         current_line = ""
@@ -338,8 +338,15 @@ class ItemPopup(ImageRectTextObject):
                 lines.append(current_line)
                 break
 
+        first_line = lines[0].split(":")
+        name_highlight = first_line[0] + ":"
+        self.text_surf = self.font.render(name_highlight, True, (0, 240, 0))
+        surface.blit(self.text_surf, (self.x + 15, self.y + 15))
+        self.text_surf = self.font.render(first_line[1], True, self.text_color)
+        surface.blit(self.text_surf, (self.x + 15 + (len(name_highlight) / 1.8 * self.text_size), self.y + 15))
+
         # Place each line of text
-        for i in range(len(lines)):
+        for i in range(1, len(lines)):
             self.text_surf = self.font.render(lines[i], True, self.text_color)
             surface.blit(self.text_surf, (self.x + 15, self.y + 15 + i * (popup_height - 30) // len(lines)))
 
