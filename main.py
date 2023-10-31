@@ -20,7 +20,7 @@ def main():
 
     time = 0  # Used for keeping track of seconds (60 ticks per second)
 
-    screen.fill(pygame.Color("White"))
+    screen.fill(SCREEN_COLOR)
     pygame.display.set_caption("Carbon Clicker")
 
     # ----------------- Initializing Objects -----------------
@@ -61,8 +61,8 @@ def main():
     # Create the first layer of basic objects
     basic_objects_layer_1 = [
         ImageRectObject((100, 100, 100), LAYER_LEFT_RECT, 0, 0, image_file="images/left_background.png"),
-        ImageRectObject((200, 200, 200), LAYER_MIDDLE_RECT, 0, 0, image_file="images/middle_background.png"),
-        RectObject((150, 150, 150), LAYER_RIGHT_RECT, 0, 0),
+        ImageRectObject((200, 200, 200), LAYER_MIDDLE_RECT, 0, 0, image_file="images/middle_background_border.png"),
+        RectObject((0, 0, 0), LAYER_RIGHT_RECT, 0, 0),
         title_panel,
         pollution_cleared_panel,
         pps_panel,
@@ -77,6 +77,11 @@ def main():
     basic_objects_layer_2 = [
         item_panel
     ]
+
+    stars = []
+
+    for star_i in range(NUM_STARS):
+        stars.append(Star(LAYER_BOTTOM_RECT))
 
     # ----------------- Scroll Bar -----------------
     holding_scroll_bar = False
@@ -132,6 +137,8 @@ def main():
     click_interval = 0
     can_click = True
 
+    hovering_earth = False
+
     # ----------------- Sprites -----------------
     earth_clicker = Earth(EARTH_CLICKER_RECT)
     sprite_group = pygame.sprite.Group()
@@ -156,10 +163,10 @@ def main():
             # ----------------- Mouse Clicked -----------------
             if event.type == pygame.MOUSEBUTTONDOWN:
                 location = pygame.mouse.get_pos()
-                collided_object = [s for s in sprites if s.rect.collidepoint(location)]
+                colliding_earth = earth_clicker.colliding(location)
 
                 # The earth was clicked
-                if can_click and len(collided_object) == 1 and collided_object[0] == earth_clicker:
+                if can_click and colliding_earth:
                     earth_clicker.resize_down()
 
                 # The scroll bar was clicked
@@ -170,12 +177,12 @@ def main():
             # ----------------- Mouse Released -----------------
             if event.type == pygame.MOUSEBUTTONUP:
                 location = pygame.mouse.get_pos()
-                collided_object = [s for s in sprites if s.rect.collidepoint(location)]
+                colliding_earth = earth_clicker.colliding(location)
 
                 # Calculate changes when the earth has been clicked
-                if can_click and len(collided_object) == 1 and collided_object[0] == earth_clicker:
+                if can_click and colliding_earth:
                     click_sound.play()
-                    earth_clicker.resize_up()
+                    earth_clicker.hover()
                     pollution_cleared += click_strength
                     total_pollution_cleared += click_strength
 
@@ -287,6 +294,13 @@ def main():
         # ----------------- Mouse and Selection -----------------
         mouse_pos = pygame.mouse.get_pos()
         selected_object = get_selected_object(mouse_pos, buttons, items, upgrades)
+        colliding_earth = earth_clicker.colliding(mouse_pos)
+        if not colliding_earth and hovering_earth:
+            hovering_earth = False
+            earth_clicker.resize_normal()
+        if not hovering_earth and colliding_earth:
+            hovering_earth = True
+            earth_clicker.hover()
 
         # ----------------- Scroll Bar Movement -----------------
         if holding_scroll_bar:
@@ -328,12 +342,22 @@ def main():
 
         # ----------------- Redrawing and Updating -----------------
 
-        screen.fill(pygame.Color("White"))
+        screen.fill(SCREEN_COLOR)
+
+        # Draw stars
+        earth_center = earth_clicker.get_center()
+        displacement = ((mouse_pos[0] - earth_center[0]) / 1000.0, (mouse_pos[1] - earth_center[1]) / 1000.0)
+
+        for star in stars:
+            star.update_position(displacement)
+            star.draw(screen, False)
 
         draw_main_objects_1(screen, selected_object, basic_objects_layer_1, buttons)
         draw_items(screen, selected_object, items, money)
         draw_upgrades(screen, selected_object, upgrades, money, upgrade_count)
         draw_main_objects_2(screen, basic_objects_layer_2)
+
+        earth_clicker.animate()
         sprite_group.draw(screen)
         draw_animated_text(screen, animation_text_list)
         draw_item_popup(screen, item_popup)

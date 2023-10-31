@@ -1,4 +1,5 @@
 import pygame
+import random
 from constants import *
 
 
@@ -15,6 +16,25 @@ class Object:
         self.y = rect[1]
         self.width = rect[2]
         self.height = rect[3]
+
+
+# ----------------- A circular Object -----------------
+# (extends Object)
+class CircleObject(Object):
+    # 3 panels
+    def __init__(self, color, center, thickness, radius):
+        super().__init__((center[0], center[1], radius, radius))
+        self.center = center
+        self.color = color
+
+        self.thickness = thickness
+        self.radius = radius
+
+    # Draw the item
+    def draw(self, surface, selected):
+        if len(self.color) < 4 or self.color[3] != 0:
+            pygame.draw.circle(surface, self.color,
+                              (self.x, self.y), self.radius, self.thickness)
 
 
 # ----------------- A rectangular Object -----------------
@@ -402,10 +422,13 @@ class Earth(pygame.sprite.Sprite):
     def __init__(self, rect):
         super().__init__()
 
+        self.max_animation_frames = 10
+        self.animation_frame = self.max_animation_frames
         self.x = rect[0]
         self.y = rect[1]
         self.width = rect[2]
         self.height = rect[3]
+        self.current_rect = rect
 
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.rect = self.image.get_rect()
@@ -439,18 +462,113 @@ class Earth(pygame.sprite.Sprite):
     # ----------------- Clicking animations -----------------
     # Scale the earth down
     def resize_down(self):
-        new_rect = EARTH_CLICKER_SMALL_RECT
-        self.x = new_rect[0]
-        self.y = new_rect[1]
-        self.width = new_rect[2]
-        self.height = new_rect[3]
-        self.redraw()
+        self.animation_frame = 0
+        self.current_rect = EARTH_CLICKER_SMALL_RECT
 
     # Rescale it back up
-    def resize_up(self):
-        new_rect = EARTH_CLICKER_RECT
-        self.x = new_rect[0]
-        self.y = new_rect[1]
-        self.width = new_rect[2]
-        self.height = new_rect[3]
+    def resize_normal(self):
+        self.animation_frame = 0
+        self.current_rect = EARTH_CLICKER_RECT
+
+    def hover(self):
+        self.animation_frame = 0
+        self.current_rect = EARTH_CLICKER_LARGE_RECT
+
+    def animate(self):
+        if self.animation_frame == self.max_animation_frames:
+            return
+
+        self.animation_frame += 1
+
+        deltas = (self.current_rect[0] - self.x,
+                  self.current_rect[1] - self.y,
+                  self.current_rect[2] - self.width,
+                  self.current_rect[3] - self.height)
+
+        adjusted_deltas = []
+        for d in deltas:
+            adjusted_deltas.append(d * (self.animation_frame / self.max_animation_frames))
+
+        self.x += adjusted_deltas[0]
+        self.y += adjusted_deltas[1]
+        self.width += adjusted_deltas[2]
+        self.height += adjusted_deltas[3]
+
         self.redraw()
+
+    def get_center(self):
+        radius = self.width // 2
+        center = (self.x + radius, self.y + radius)
+
+        return center
+
+    def colliding(self, location):
+        radius = self.width // 2
+        center = self.get_center()
+
+        x_leg = abs(location[0] - center[0])
+        y_leg = abs(location[1] - center[1])
+
+        hyp = (x_leg ** 2 + y_leg ** 2) ** 0.5
+
+        if hyp <= radius:
+            return True
+        else:
+            return False
+
+
+# (extends CircleObject)
+class Star(CircleObject):
+    # 3 panels
+    def __init__(self, spawn_rect):
+        self.inherent_speed = random.randint(-10, 10) / 100.0
+        self.spawn_rect = spawn_rect
+        self.radius = 1
+        self.x = random.randint(spawn_rect[0], spawn_rect[0] + spawn_rect[2] - self.radius)
+        self.y = random.randint(spawn_rect[1], spawn_rect[1] + spawn_rect[3] - self.radius)
+        self.twinkle_frame_gap = random.randint(120, 500)
+        self.twinkle_frame_counter = 0
+
+        super().__init__((random.randint(200, 255), random.randint(200, 255), random.randint(200, 255)),
+                         (self.x, self.y), 0, self.radius)
+        self.center = (self.x, self.y)
+
+    def update_position(self, displacement):
+        displacement = (displacement[0] + self.inherent_speed,
+                        displacement[1] + self.inherent_speed)
+
+        self.x += displacement[0]
+        self.y += displacement[1]
+
+        # Out of bounds
+        if self.x < self.spawn_rect[0]:
+            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.x = self.spawn_rect[0] + self.spawn_rect[2]
+            self.y = random.randint(self.spawn_rect[1], self.spawn_rect[1] + self.spawn_rect[3] - self.radius)
+        elif self.x > self.spawn_rect[0] + self.spawn_rect[2]:
+            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.x = self.spawn_rect[0]
+            self.y = random.randint(self.spawn_rect[1], self.spawn_rect[1] + self.spawn_rect[3] - self.radius)
+        elif self.y < self.spawn_rect[1]:
+            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.x = random.randint(self.spawn_rect[0], self.spawn_rect[0] + self.spawn_rect[2] - self.radius)
+            self.y = self.spawn_rect[1] + self.spawn_rect[3]
+        elif self.y > self.spawn_rect[1] + self.spawn_rect[3]:
+            self.inherent_speed = random.randint(-10, 10) / 100.0
+            self.x = random.randint(self.spawn_rect[0], self.spawn_rect[0] + self.spawn_rect[2] - self.radius)
+            self.y = self.spawn_rect[1]
+
+        self.center = (self.x, self.y)
+
+    def draw(self, surface, selected):
+        super().draw(surface, selected)
+        self.twinkle_frame_counter += 1
+
+        if self.twinkle_frame_counter == self.twinkle_frame_gap:
+            self.radius = 2
+        elif self.twinkle_frame_counter == self.twinkle_frame_gap + 20:
+            self.radius = 1
+            self.twinkle_frame_counter = 0
+            self.twinkle_frame_gap = random.randint(120, 500)
+
+
