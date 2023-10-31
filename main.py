@@ -93,13 +93,15 @@ def main():
             screen.blit(new_surface, (0, 0))
 
             if transparency >= 255:
-                running = False
+                main_game(screen)
+                break
 
         # Set the FPS and update
         clock.tick(60)
         pygame.display.update()
 
-    main_game(screen)
+    # Once the loop has ended, quit the application
+    pygame.quit()
 
 
 def main_game(screen):
@@ -244,7 +246,6 @@ def main_game(screen):
             # Quit Pygame
             if event.type == pygame.QUIT:
                 running = False
-                break
 
             # ----------------- Mouse Clicked -----------------
             if event.type == pygame.MOUSEBUTTONDOWN:
